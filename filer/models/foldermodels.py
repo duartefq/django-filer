@@ -47,7 +47,7 @@ class FolderPermissionManager(models.Manager):
         allow_list = set()
         deny_list = set()
         group_ids = user.groups.all().values_list('id', flat=True)
-        q = Q(user=user) | Q(groups__in=group_ids) | Q(everybody=True)
+        q = Q(users__in=[user]) | Q(groups__in=group_ids) | Q(everybody=True)
         perms = self.filter(q).order_by('folder__tree_id', 'folder__level',
                                         'folder__lft')
         for perm in perms:
@@ -275,13 +275,15 @@ class FolderPermission(models.Model):
     user = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
                              related_name="filer_folder_permissions", on_delete=models.SET_NULL,
                              verbose_name=_("user"), blank=True, null=True)
+    users = models.ManyToManyField(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
+                             related_name="filer_folder_permission_users",
+                             verbose_name=_("users"), blank=True)
     group = models.ForeignKey(auth_models.Group,
                               related_name="filer_folder_permissions",
                               verbose_name=_("group"), blank=True, null=True)
     groups = models.ManyToManyField(auth_models.Group,
                                     related_name='filer_folder_permission_groups',
-                                    verbose_name=_("groups"),
-                                    blank=True)
+                                    verbose_name=_("groups"), blank=True)
     everybody = models.BooleanField(_("everybody"), default=False)
 
     can_edit = models.SmallIntegerField(

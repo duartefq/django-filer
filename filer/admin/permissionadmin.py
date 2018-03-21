@@ -11,7 +11,7 @@ from ..fields import folder
 class PermissionAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': (('type', 'folder', ))}),
-        (None, {'fields': ('user',)}),
+        (None, {'fields': ('users',)}),
         (None, {'fields': ('groups',)}),
         (None, {'fields': (
             ('can_edit', 'can_read', 'can_add_children')
@@ -19,11 +19,11 @@ class PermissionAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ('user',)
     list_filter = [('folder', RelatedOnlyFieldListFilter),
-                   ('user', RelatedOnlyFieldListFilter),
+                   ('users', RelatedOnlyFieldListFilter),
                    ('groups', RelatedOnlyFieldListFilter),
                    'can_edit', 'can_read']
-    list_display = ['__str__', 'folder', 'user']
-    filter_horizontal = ('groups',)
+    list_display = ['__str__', 'folder']
+    filter_horizontal = ('groups', 'users')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         db = kwargs.get('using')
