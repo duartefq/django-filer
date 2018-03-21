@@ -357,16 +357,18 @@ class FolderPermissionsTestCase(TestCase):
 
             # We have to invalidate cache
             delattr(self.folder_perm, 'permission_cache')
+            delattr(self.folder, 'permission_cache')
 
             self.assertEqual(self.folder_perm.has_read_permission(request3), False)
             self.assertEqual(self.folder_perm.has_edit_permission(request3), False)
             self.assertEqual(self.folder.has_read_permission(request3), True)
             self.assertEqual(self.folder.has_edit_permission(request3), True)
 
-            fp1.users.add(self.test_user1, self.test_user3)
+            fp1.users.add(self.test_user3)
 
             # We have to invalidate cache
             delattr(self.folder_perm, 'permission_cache')
+            delattr(self.folder, 'permission_cache')
 
             self.assertEqual(self.folder_perm.has_read_permission(request3), True)
             self.assertEqual(self.folder_perm.has_edit_permission(request3), True)
