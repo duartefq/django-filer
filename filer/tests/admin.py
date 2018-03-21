@@ -339,13 +339,13 @@ class FilerClipboardAdminUrlsTests(TestCase):
         with SettingsOverride(filer_settings, FILER_ENABLE_PERMISSIONS=True):
 
             # give permissions over BAR
-            FolderPermission.objects.create(
+            fp = FolderPermission.objects.create(
                 folder=folder,
-                user=staff_user,
                 type=FolderPermission.THIS,
                 can_edit=FolderPermission.DENY,
                 can_read=FolderPermission.ALLOW,
                 can_add_children=FolderPermission.DENY)
+            fp.users.add(staff_user)
             url = reverse('admin:filer-ajax_upload',
                           kwargs={'folder_id': folder.pk})
             post_data = {
@@ -373,13 +373,13 @@ class FilerClipboardAdminUrlsTests(TestCase):
         with SettingsOverride(filer_settings, FILER_ENABLE_PERMISSIONS=True):
 
             # give permissions over BAR
-            FolderPermission.objects.create(
+            fp = FolderPermission.objects.create(
                 folder=folder,
-                user=staff_user,
                 type=FolderPermission.THIS,
                 can_edit=FolderPermission.DENY,
                 can_read=FolderPermission.ALLOW,
                 can_add_children=FolderPermission.DENY)
+            fp.users.add(staff_user)
             url = reverse(
                 'admin:filer-ajax_upload',
                 kwargs={
@@ -826,13 +826,13 @@ class FolderListingTest(TestCase):
     def test_with_permission_given_to_folder(self):
         with SettingsOverride(filer_settings, FILER_ENABLE_PERMISSIONS=True):
             # give permissions over BAR
-            FolderPermission.objects.create(
+            fp = FolderPermission.objects.create(
                 folder=self.bar_folder,
-                user=self.staff_user,
                 type=FolderPermission.THIS,
                 can_edit=FolderPermission.ALLOW,
                 can_read=FolderPermission.ALLOW,
                 can_add_children=FolderPermission.ALLOW)
+            fp.users.add(self.staff_user)
             response = self.client.get(
                 reverse('admin:filer-directory_listing',
                         kwargs={'folder_id': self.parent.id}))
@@ -844,13 +844,13 @@ class FolderListingTest(TestCase):
 
     def test_with_permission_given_to_parent_folder(self):
         with SettingsOverride(filer_settings, FILER_ENABLE_PERMISSIONS=True):
-            FolderPermission.objects.create(
+            fp = FolderPermission.objects.create(
                 folder=self.parent,
-                user=self.staff_user,
                 type=FolderPermission.CHILDREN,
                 can_edit=FolderPermission.ALLOW,
                 can_read=FolderPermission.ALLOW,
                 can_add_children=FolderPermission.ALLOW)
+            fp.users.add(self.staff_user)
             response = self.client.get(
                 reverse('admin:filer-directory_listing',
                         kwargs={'folder_id': self.parent.id}))
@@ -889,9 +889,9 @@ class FolderListingTest(TestCase):
         self.assertEqual(len(folder_qs), 0)
 
     def test_search_special_characters(self):
-        """ 
+        """
         Regression test for https://github.com/divio/django-filer/pull/945.
-        Because of a wrong unquoting function being used, searches with 
+        Because of a wrong unquoting function being used, searches with
         some "_XX" sequences got unquoted as unicode characters.
         For example, "_ec" gets unquoted as u'ì'.
         """
