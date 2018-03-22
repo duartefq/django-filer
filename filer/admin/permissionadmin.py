@@ -18,11 +18,11 @@ class PermissionAdmin(admin.ModelAdmin):
         )}),
     )
     raw_id_fields = ('user',)
-    list_filter = [('folder', RelatedOnlyFieldListFilter),
-                   ('users', RelatedOnlyFieldListFilter),
+    list_filter = [('users', RelatedOnlyFieldListFilter),
                    ('groups', RelatedOnlyFieldListFilter),
                    'can_edit', 'can_read']
     list_display = ['__str__', 'folder']
+    search_fields = ('folder__name',)
     filter_horizontal = ('groups', 'users')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
